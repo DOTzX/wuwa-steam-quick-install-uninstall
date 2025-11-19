@@ -1,6 +1,11 @@
 # Step 1: Initialization
 $locale = (Get-Culture).Name
 $isIndonesian = $locale -like "id-*"
+Write-Host "=========================================================================" -ForegroundColor Blue
+Write-Host "|                                                                       |" -ForegroundColor Blue
+Write-Host "|  GitHub: https://github.com/DOTzX/wuwa-steam-quick-install-uninstall  |" -ForegroundColor Blue
+Write-Host "|                                                                       |" -ForegroundColor Blue
+Write-Host "=========================================================================" -ForegroundColor Blue
 Write-Host ""
 
 # Step 1.1: Helper function
