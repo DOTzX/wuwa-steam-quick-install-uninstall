@@ -1,4 +1,6 @@
-# Quick-Install and Safe-Uninstall WUWA Steam
+# Pre-Download WUWA on Steam using Launcher
+
+[![Pre-Download WUWA on Steam using Launcher](https://img.youtube.com/vi/kGagCyYDKg8/0.jpg)](https://www.youtube.com/watch?v=kGagCyYDKg8)
 
 ## Requirement
 - Official Launcher ready to start the game and has finished updating
