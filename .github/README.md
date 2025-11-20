@@ -5,11 +5,24 @@
 - Official Launcher and Steam version must be on an NTFS file system (can be on a different drive)
 - Administrative privileges are required because the script uses symlinks
 
+## Procedure for upcoming pre-downloads:
+1. (When the pre-download period begins)
+2. Pre-download the game through the launcher
+3. (When maintenance begins)
+4. Apply updates through the launcher
+5. Perform a **SAFE UNINSTALL** of Wuthering Waves on Steam following this guide
+6. Perform a **QUICK INSTALLATION** of Wuthering Waves on Steam following this guide
+
+## Important notes after following this guide:
+- Pre-downloads must be done through the official launcher. This guide only facilitates the process on Steam.
+- Automatic updates on Steam must be set to “Wait until I launch the game”, it prevents Steam from patching the official launcher files when a major update arrives.
+- A safe uninstall is **MANDATORY** for each major version update.
+
 ## Usage
 
 Choose one of the two options
 
-### Option A
+### Option: Online
 - Open PowerShell as Admin
 - Copy-paste:
 ```
@@ -17,7 +30,7 @@ irm "https://raw.githubusercontent.com/DOTzX/wuwa-steam-quick-install-uninstall/
 ```
 - Follow the instructions provided
 
-### Option B
+### Option: Offline
 - Download directly from [here](https://github.com/DOTzX/wuwa-steam-quick-install-uninstall/archive/refs/heads/master.zip)
 - Unpack
 - Open the "open.bat"
