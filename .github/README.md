@@ -4,6 +4,7 @@
 - Official Launcher ready to start the game and has finished updating
 - Official Launcher and Steam version must be on an NTFS file system (can be on a different drive)
 - Administrative privileges are required because the script uses symlinks
+- As of Wuthering Waves 3.7, required Resource is **HD** for Steam version
 
 ## Procedure for upcoming pre-downloads:
 1. (When the pre-download period begins)

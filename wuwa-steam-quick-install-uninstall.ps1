@@ -178,6 +178,7 @@ $jsonData | ConvertTo-Json -Depth 2 | Set-Content -Path $jsonPath
 
 # Step 3: Define functions
 function DoFuncRemoveSymLink {
+    $hdPath = Join-Path $steamPath "Client\Content\HD"
     $paksPath = Join-Path $steamPath "Client\Content\Paks"
     $savedPath = Join-Path $steamPath "Client\Saved"
     $isNotExists = $false
@@ -191,7 +192,7 @@ function DoFuncRemoveSymLink {
         $isNotExists = $true
     } else {
         $isSavedLink = Is-JunctionOrSymlink $savedPath
-        
+
         if (-not ($isSavedLink)) {
             if ($isIndonesian) {
                 Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${savedPath}" -ForegroundColor Red
@@ -211,7 +212,7 @@ function DoFuncRemoveSymLink {
         $isNotExists = $true
     } else {
         $isPaksLink = Is-JunctionOrSymlink $paksPath
-        
+
         if (-not ($isPaksLink)) {
             if ($isIndonesian) {
                 Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${paksPath}" -ForegroundColor Red
@@ -222,8 +223,29 @@ function DoFuncRemoveSymLink {
         }
     }
 
+    if (-not (Test-Path $hdPath)) {
+        if ($isIndonesian) {
+            Write-Host "[WARNING] Folder tidak ditemukan:`n${hdPath}" -ForegroundColor Yellow
+        } else {
+            Write-Host "[WARNING] Folder is not exists:`n${hdPath}" -ForegroundColor Yellow
+        }
+        $isNotExists = $true
+    } else {
+        $isHdLink = Is-JunctionOrSymlink $hdPath
+
+        if (-not ($isHdLink)) {
+            if ($isIndonesian) {
+                Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${hdPath}" -ForegroundColor Red
+            } else {
+                Write-Host "[ERROR] This folder is not junction/symlink:`n${hdPath}" -ForegroundColor Red
+            }
+            return
+        }
+    }
+
     cmd /c rmdir "$savedPath"
     cmd /c rmdir "$paksPath"
+    cmd /c rmdir "$hdPath"
 
     if ($isNotExists) {
         if ($isIndonesian) {
@@ -249,6 +271,9 @@ function DoFuncCreateSymLink {
     $paksTarget = Join-Path $steamPath "Client\Content\Paks"
     $paksSource = Join-Path $officialPath "Client\Content\Paks"
 
+    $hdTarget = Join-Path $steamPath "Client\Content\HD"
+    $hdSource = Join-Path $officialPath "Client\Content\HD"
+
     if (-not (Test-Path $savedSource)) {
         if ($isIndonesian) {
             Write-Host "[ERROR] Folder tidak ditemukan:`n${savedSource}" -ForegroundColor Red
@@ -263,6 +288,15 @@ function DoFuncCreateSymLink {
             Write-Host "[ERROR] Folder tidak ditemukan:`n${paksSource}" -ForegroundColor Red
         } else {
             Write-Host "[ERROR] Folder is not exists:`n${paksSource}" -ForegroundColor Red
+        }
+        return
+    }
+
+    if (-not (Test-Path $hdSource)) {
+        if ($isIndonesian) {
+            Write-Host "[ERROR] Folder tidak ditemukan:`n${hdSource}" -ForegroundColor Red
+        } else {
+            Write-Host "[ERROR] Folder is not exists:`n${hdSource}" -ForegroundColor Red
         }
         return
     }
@@ -289,6 +323,15 @@ function DoFuncCreateSymLink {
                 Write-Host "[WARNING] Folder telah ada:`n${paksTarget}" -ForegroundColor Yellow
             } else {
                 Write-Host "[WARNING] Folder already exists:`n${paksTarget}" -ForegroundColor Yellow
+            }
+        }
+        if (-not (Test-Path $hdTarget)) {
+            New-Item -ItemType SymbolicLink -Path $hdTarget -Target $hdSource | Out-Null
+        } else {
+            if ($isIndonesian) {
+                Write-Host "[WARNING] Folder telah ada:`n${hdTarget}" -ForegroundColor Yellow
+            } else {
+                Write-Host "[WARNING] Folder already exists:`n${hdTarget}" -ForegroundColor Yellow
             }
         }
 
