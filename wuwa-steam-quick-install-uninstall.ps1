@@ -178,6 +178,8 @@ $jsonData | ConvertTo-Json -Depth 2 | Set-Content -Path $jsonPath
 
 # Step 3: Define functions
 function DoFuncRemoveSymLink {
+    $uhdPath = Join-Path $steamPath "Client\Content\UHD"
+    $sdPath = Join-Path $steamPath "Client\Content\SD"
     $hdPath = Join-Path $steamPath "Client\Content\HD"
     $paksPath = Join-Path $steamPath "Client\Content\Paks"
     $savedPath = Join-Path $steamPath "Client\Saved"
@@ -191,9 +193,9 @@ function DoFuncRemoveSymLink {
         }
         $isNotExists = $true
     } else {
-        $isSavedLink = Is-JunctionOrSymlink $savedPath
+        $isLink = Is-JunctionOrSymlink $savedPath
 
-        if (-not ($isSavedLink)) {
+        if (-not ($isLink)) {
             if ($isIndonesian) {
                 Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${savedPath}" -ForegroundColor Red
             } else {
@@ -211,9 +213,9 @@ function DoFuncRemoveSymLink {
         }
         $isNotExists = $true
     } else {
-        $isPaksLink = Is-JunctionOrSymlink $paksPath
+        $isLink = Is-JunctionOrSymlink $paksPath
 
-        if (-not ($isPaksLink)) {
+        if (-not ($isLink)) {
             if ($isIndonesian) {
                 Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${paksPath}" -ForegroundColor Red
             } else {
@@ -231,9 +233,9 @@ function DoFuncRemoveSymLink {
         }
         $isNotExists = $true
     } else {
-        $isHdLink = Is-JunctionOrSymlink $hdPath
+        $isLink = Is-JunctionOrSymlink $hdPath
 
-        if (-not ($isHdLink)) {
+        if (-not ($isLink)) {
             if ($isIndonesian) {
                 Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${hdPath}" -ForegroundColor Red
             } else {
@@ -243,9 +245,61 @@ function DoFuncRemoveSymLink {
         }
     }
 
-    cmd /c rmdir "$savedPath"
-    cmd /c rmdir "$paksPath"
-    cmd /c rmdir "$hdPath"
+    if (-not (Test-Path $sdPath)) {
+        if ($isIndonesian) {
+            Write-Host "[WARNING] Folder tidak ditemukan:`n${sdPath}" -ForegroundColor Yellow
+        } else {
+            Write-Host "[WARNING] Folder is not exists:`n${sdPath}" -ForegroundColor Yellow
+        }
+        $isNotExists = $true
+    } else {
+        $isLink = Is-JunctionOrSymlink $sdPath
+
+        if (-not ($isLink)) {
+            if ($isIndonesian) {
+                Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${sdPath}" -ForegroundColor Red
+            } else {
+                Write-Host "[ERROR] This folder is not junction/symlink:`n${sdPath}" -ForegroundColor Red
+            }
+            return
+        }
+    }
+
+    if (-not (Test-Path $uhdPath)) {
+        if ($isIndonesian) {
+            Write-Host "[WARNING] Folder tidak ditemukan:`n${uhdPath}" -ForegroundColor Yellow
+        } else {
+            Write-Host "[WARNING] Folder is not exists:`n${uhdPath}" -ForegroundColor Yellow
+        }
+        $isNotExists = $true
+    } else {
+        $isLink = Is-JunctionOrSymlink $uhdPath
+
+        if (-not ($isLink)) {
+            if ($isIndonesian) {
+                Write-Host "[ERROR] Folder berikut bukanlah junction/symlink:`n${uhdPath}" -ForegroundColor Red
+            } else {
+                Write-Host "[ERROR] This folder is not junction/symlink:`n${uhdPath}" -ForegroundColor Red
+            }
+            return
+        }
+    }
+
+    if (Test-Path $savedPath) {
+        cmd /c rmdir "$savedPath"
+    }
+    if (Test-Path $paksPath) {
+        cmd /c rmdir "$paksPath"
+    }
+    if (Test-Path $hdPath) {
+        cmd /c rmdir "$hdPath"
+    }
+    if (Test-Path $sdPath) {
+        cmd /c rmdir "$sdPath"
+    }
+    if (Test-Path $uhdPath) {
+        cmd /c rmdir "$uhdPath"
+    }
 
     if ($isNotExists) {
         if ($isIndonesian) {
@@ -274,6 +328,12 @@ function DoFuncCreateSymLink {
     $hdTarget = Join-Path $steamPath "Client\Content\HD"
     $hdSource = Join-Path $officialPath "Client\Content\HD"
 
+    $sdTarget = Join-Path $steamPath "Client\Content\SD"
+    $sdSource = Join-Path $officialPath "Client\Content\SD"
+
+    $uhdTarget = Join-Path $steamPath "Client\Content\UHD"
+    $uhdSource = Join-Path $officialPath "Client\Content\UHD"
+
     if (-not (Test-Path $savedSource)) {
         if ($isIndonesian) {
             Write-Host "[ERROR] Folder tidak ditemukan:`n${savedSource}" -ForegroundColor Red
@@ -301,6 +361,8 @@ function DoFuncCreateSymLink {
         return
     }
 
+    # SD/UHD is Optional per 3.7, so the script won't check it
+
     $contentDir = Join-Path $steamPath "Client\Content"
     if (-not (Test-Path $contentDir)) {
         New-Item -ItemType Directory -Path $contentDir -Force | Out-Null
@@ -316,6 +378,7 @@ function DoFuncCreateSymLink {
                 Write-Host "[WARNING] Folder already exists:`n${savedTarget}" -ForegroundColor Yellow
             }
         }
+
         if (-not (Test-Path $paksTarget)) {
             New-Item -ItemType SymbolicLink -Path $paksTarget -Target $paksSource | Out-Null
         } else {
@@ -325,6 +388,7 @@ function DoFuncCreateSymLink {
                 Write-Host "[WARNING] Folder already exists:`n${paksTarget}" -ForegroundColor Yellow
             }
         }
+
         if (-not (Test-Path $hdTarget)) {
             New-Item -ItemType SymbolicLink -Path $hdTarget -Target $hdSource | Out-Null
         } else {
@@ -332,6 +396,32 @@ function DoFuncCreateSymLink {
                 Write-Host "[WARNING] Folder telah ada:`n${hdTarget}" -ForegroundColor Yellow
             } else {
                 Write-Host "[WARNING] Folder already exists:`n${hdTarget}" -ForegroundColor Yellow
+            }
+        }
+
+        # SD is Optional per 3.7
+        if (-not (Test-Path $sdTarget)) {
+            if (Test-Path $sdSource) {
+                New-Item -ItemType SymbolicLink -Path $sdTarget -Target $sdSource | Out-Null
+            }
+        } else {
+            if ($isIndonesian) {
+                Write-Host "[WARNING] Folder telah ada:`n${sdTarget}" -ForegroundColor Yellow
+            } else {
+                Write-Host "[WARNING] Folder already exists:`n${sdTarget}" -ForegroundColor Yellow
+            }
+        }
+
+        # UHD is Optional per 3.7
+        if (-not (Test-Path $uhdTarget)) {
+            if (Test-Path $uhdSource) {
+                New-Item -ItemType SymbolicLink -Path $uhdTarget -Target $uhdSource | Out-Null
+            }
+        } else {
+            if ($isIndonesian) {
+                Write-Host "[WARNING] Folder telah ada:`n${uhdTarget}" -ForegroundColor Yellow
+            } else {
+                Write-Host "[WARNING] Folder already exists:`n${uhdTarget}" -ForegroundColor Yellow
             }
         }
 
