@@ -1,4 +1,4 @@
-# Pre-Download WUWA on Steam using Launcher
+# [NOT WORK IN 3.8] Pre-Download WUWA on Steam using Launcher
 
 ## Requirement
 - Official Launcher ready to start the game and has finished updating
